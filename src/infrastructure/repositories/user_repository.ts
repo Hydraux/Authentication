@@ -13,7 +13,7 @@ export class TypeOrmUserRepository implements IUserRepository {
         private readonly _repository: Repository<UserEntity>,
     ) { }
 
-    existsById(id: number): Promise<boolean> {
+    existsById(id: string): Promise<boolean> {
         return this._repository.exists({ where: { id } });
     }
 
@@ -28,7 +28,7 @@ export class TypeOrmUserRepository implements IUserRepository {
         return;
     }
 
-    async delete(id: number): Promise<void> {
+    async delete(id: string): Promise<void> {
         this._repository.delete(id);
         return;
     }
@@ -44,6 +44,7 @@ export class TypeOrmUserRepository implements IUserRepository {
 
     async findByEmail(email: string): Promise<User | null> {
         const userEntity = await this._repository.findOne({ where: { email } });
+        console.log(userEntity);
         return userEntity ? UserMapper.toDomain(userEntity) : null;
     }
 
@@ -52,7 +53,7 @@ export class TypeOrmUserRepository implements IUserRepository {
         return userEntity ? UserMapper.toDomain(userEntity) : null;
     }
 
-    async findById(id: number): Promise<User | null> {
+    async findById(id: string): Promise<User | null> {
         const userEntity = await this._repository.findOne({ where: { id } });
         return userEntity ? UserMapper.toDomain(userEntity) : null;
     }

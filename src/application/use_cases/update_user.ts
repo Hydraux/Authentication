@@ -2,6 +2,7 @@ import { User } from "src/domain/entities/user.entity";
 import { IUserRepository } from "../interfaces/user_repository";
 import { CreateUserData } from "../types/create_user_data";
 import { Inject, Injectable } from "@nestjs/common";
+import { UserNotFoundError } from "src/domain/exceptions/user.exceptions";
 
 
 @Injectable()
@@ -19,7 +20,7 @@ export class UpdateUserUseCase {
 
             const user: User | null = await this.userRepository.findById(id);
             if (!user) {
-                throw new Error(`User with id ${id} not found`);
+                throw new UserNotFoundError(id);
             }
 
             user.email = email ?? user.email;

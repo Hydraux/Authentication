@@ -1,4 +1,4 @@
-import { CreateUserData } from "src/application/types/create_user_data";
+import { randomUUID } from "crypto";
 import { User } from "./user.entity";
 
 

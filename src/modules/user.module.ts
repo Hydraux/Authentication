@@ -1,7 +1,7 @@
-// modules/users.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateUserUseCase } from 'src/application/use_cases/create_user';
+import { DeleteUserByEmailUseCase } from 'src/application/use_cases/delete_user_by_email';
 import { GetUserByEmailUseCase } from 'src/application/use_cases/get_user_by_email';
 import { GetUserByIdUseCase } from 'src/application/use_cases/get_user_by_id';
 import { GetUsersUseCase } from 'src/application/use_cases/get_users';
@@ -31,6 +31,7 @@ import { UserController } from 'src/presentation/controllers/user.controller';
     GetUserByIdUseCase,
     GetUserByEmailUseCase,
     CreateUserUseCase,
+    DeleteUserByEmailUseCase,
     UpdateUserUseCase,
     // ... other use cases
     

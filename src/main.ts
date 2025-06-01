@@ -1,12 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { DomainExceptionFilter } from './infrastructure/filters/domain_exception.filter';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log'],
   });
+  app.useGlobalFilters(new DomainExceptionFilter());
   const port = process.env.PORT || 3000;
   await app.listen(port);
   logger.log(`Application is running on: http://localhost:${port}`);
