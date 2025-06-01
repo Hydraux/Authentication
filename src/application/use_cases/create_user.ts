@@ -9,7 +9,10 @@ import { Inject, Injectable } from "@nestjs/common";
 export class CreateUserUseCase implements IUseCase<CreateUserData, User> {
     constructor(
         @Inject('UserRepository')
-        private userRepository: IUserRepository
+        private userRepository: IUserRepository,
+
+        @Inject('CryptoGateway')
+        private cryptoGateway: ICryptoGateway,
     ) { }
 
     async execute(input: { id: number, name: string, email: string, password: string }): Promise<User> {
@@ -20,8 +23,12 @@ export class CreateUserUseCase implements IUseCase<CreateUserData, User> {
             throw new Error('All fields are required to create a user');
         }
 
+
+        // Hash the password
+        const hashedPassword = await this.cryptoGateway.hashPassword(password);
+
         // Create user entity
-        const user = UserFactory.create({ id, name, email, password });
+        const user = UserFactory.create({id, name, email, password: hashedPassword });
 
         // Save user to repository
         await this.userRepository.save(user);
