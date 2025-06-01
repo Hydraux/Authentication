@@ -12,7 +12,6 @@ async function bootstrap() {
   logger.log(`Application is running on: http://localhost:${port}`);
   logger.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }
-bootstrap();
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {

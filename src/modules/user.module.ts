@@ -1,0 +1,38 @@
+// modules/users.module.ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CreateUserUseCase } from 'src/application/use_cases/create_user';
+import { GetUserByEmailUseCase } from 'src/application/use_cases/get_user_by_email';
+import { GetUserByIdUseCase } from 'src/application/use_cases/get_user_by_id';
+import { GetUsersUseCase } from 'src/application/use_cases/get_users';
+import { UpdateUserUseCase } from 'src/application/use_cases/update_user';
+import { UserEntity } from 'src/infrastructure/database/entities/user.entity';
+import { UserMapper } from 'src/infrastructure/mappers/user.mapper';
+import { TypeOrmUserRepository } from 'src/infrastructure/repositories/user_repository';
+import { UserController } from 'src/presentation/controllers/user.controller';
+
+
+@Module({
+  imports: [TypeOrmModule.forFeature([UserEntity])],
+  providers: [
+    // Repository
+    {
+      provide: 'UserRepository',
+      useClass: TypeOrmUserRepository,
+    },
+    
+    // Use Cases (add all that your controller uses)
+    GetUsersUseCase,
+    GetUserByIdUseCase,
+    GetUserByEmailUseCase,
+    CreateUserUseCase,
+    UpdateUserUseCase,
+    // ... other use cases
+    
+    // Mappers
+    UserMapper,
+  ],
+  controllers: [UserController],
+  exports: ['UserRepository'],
+})
+export class UsersModule {}
