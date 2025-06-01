@@ -12,10 +12,24 @@ export class UserFactory {
      * @param data - The data to create a new user.
      * @returns A new User instance.
      */
-    static create({id, name, email, password}: CreateUserData): User {
-        if (!id || !name || !email || !password) {
+    static create({name, email, password}: Pick<User, "email" | "name" | "password">): User {
+        if (!name || !email || !password) {
             throw new Error('All fields are required to create a user');
         }
+
+        return new User(randomUUID(), name, email, password);
+    }
+
+    static reconstitue({
+        id,
+        name,
+        email,
+        password
+    }: Required<User>): User {
+        if (!id || !name || !email || !password) {
+            throw new Error('All fields are required to reconstitute a user');
+        }
+
         return new User(id, name, email, password);
     }
 
@@ -25,7 +39,7 @@ export class UserFactory {
      * @param data - Partial data to update the user.
      * @returns The updated user.
      */
-    static update(user: User, {name, email, password}: Partial<CreateUserData>): User {
+    static update(user: User, {name, email, password}: Partial<User>): User {
         if (name) user.name = name;
         if (email) user.email = email;
         if (password) user.password = password;

@@ -4,7 +4,7 @@ import { UserFactory } from "src/domain/entities/user.factory";
 
 export class UserMapper {
     static toDomain(userEntity: UserEntity): User {
-        return UserFactory.create({
+        return UserFactory.reconstitue({
             id: userEntity.id,
             name: userEntity.name,
             email: userEntity.email,

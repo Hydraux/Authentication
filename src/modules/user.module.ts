@@ -7,6 +7,7 @@ import { GetUserByIdUseCase } from 'src/application/use_cases/get_user_by_id';
 import { GetUsersUseCase } from 'src/application/use_cases/get_users';
 import { UpdateUserUseCase } from 'src/application/use_cases/update_user';
 import { UserEntity } from 'src/infrastructure/database/entities/user.entity';
+import { BcryptCryptoGateway } from 'src/infrastructure/gateways/bcrypt_crypto.gateway';
 import { UserMapper } from 'src/infrastructure/mappers/user.mapper';
 import { TypeOrmUserRepository } from 'src/infrastructure/repositories/user_repository';
 import { UserController } from 'src/presentation/controllers/user.controller';
@@ -19,6 +20,10 @@ import { UserController } from 'src/presentation/controllers/user.controller';
     {
       provide: 'UserRepository',
       useClass: TypeOrmUserRepository,
+    },
+    {
+      provide: 'CryptoGateway',
+      useClass: BcryptCryptoGateway,
     },
     
     // Use Cases (add all that your controller uses)

@@ -11,7 +11,7 @@ export class UpdateUserUseCase {
         private userRepository: IUserRepository
     ) { }
 
-    async execute(id: number, { name, email, password }: Partial<CreateUserData>) {
+    async execute(id: string, { name, email, password }: Partial<CreateUserData>) {
         try {
             if (!id) {
                 throw new Error('User ID is required');

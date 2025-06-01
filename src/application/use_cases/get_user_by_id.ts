@@ -9,7 +9,7 @@ export class GetUserByIdUseCase {
         private userRepository: IUserRepository
     ) { }
 
-    async execute(id: number) {
+    async execute(id: string) {
         if (!id) {
             throw new Error('User ID is required');
         }
