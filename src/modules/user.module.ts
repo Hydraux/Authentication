@@ -39,6 +39,6 @@ import { UserController } from 'src/presentation/controllers/user.controller';
     UserMapper,
   ],
   controllers: [UserController],
-  exports: ['UserRepository'],
+  exports: ['UserRepository', 'CryptoGateway', UserMapper, GetUsersUseCase, GetUserByIdUseCase, GetUserByEmailUseCase, CreateUserUseCase, DeleteUserByEmailUseCase, UpdateUserUseCase],
 })
 export class UsersModule {}

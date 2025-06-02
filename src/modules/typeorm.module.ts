@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { RefreshTokenEntity } from "src/infrastructure/database/entities/refresh_token.entity";
 import { UserEntity } from "src/infrastructure/database/entities/user.entity";
 
 @Module({
@@ -28,7 +29,7 @@ import { UserEntity } from "src/infrastructure/database/entities/user.entity";
                     username: username,
                     password: password, // Ensure this is a string
                     database: configService.get<string>('DATABASE_NAME', 'authentication'),
-                    entities: [UserEntity],
+                    entities: [UserEntity, RefreshTokenEntity],
                     synchronize: !isProduction,
                     logging: !isProduction,
                 };

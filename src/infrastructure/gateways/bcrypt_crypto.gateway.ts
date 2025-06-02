@@ -8,13 +8,13 @@ import { ICryptoGateway } from "src/application/interfaces/crypto_gateway";
 export class BcryptCryptoGateway implements ICryptoGateway {
     private bcrypt = require('bcrypt');
 
-    async hashPassword(password: string): Promise<string> {
+    async hash(value: string): Promise<string> {
         const saltRounds = 10;
-        return await this.bcrypt.hash(password, saltRounds);
+        return await this.bcrypt.hash(value, saltRounds);
     }
 
-    async comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
-        return await this.bcrypt.compare(password, hashedPassword);
+    async validate(value: string, hashedValue: string): Promise<boolean> {
+        return await this.bcrypt.compare(value, hashedValue);
     }
 
     async generateSalt(): Promise<string> {

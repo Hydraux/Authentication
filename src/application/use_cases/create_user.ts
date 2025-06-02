@@ -33,7 +33,7 @@ export class CreateUserUseCase implements IUseCase<CreateUserData, User> {
         }
 
         // Hash the password
-        const hashedPassword = await this.cryptoGateway.hashPassword(password);
+        const hashedPassword = await this.cryptoGateway.hash(password);
 
         // Create user entity
         const user = UserFactory.create({name, email, password: hashedPassword });
