@@ -13,12 +13,15 @@ import { LoginUseCase } from 'src/application/use_cases/login.use_case';
 import { LogoutUseCase } from 'src/application/use_cases/logout.use_case';
 import { RefreshTokenUseCase } from 'src/application/use_cases/refresh_token.use_case';
 import { JwtAuthGuard } from 'src/infrastructure/guards/jwt_auth.guard';
+import { CreateUserUseCase } from '../../application/use_cases/create_user';
+import { CreateUserRequest } from '../../application/dtos/create_user_request';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly createUserUseCase: CreateUserUseCase,
     private readonly logoutUseCase: LogoutUseCase,
   ) {}
 
@@ -27,7 +30,6 @@ export class AuthController {
     @Body() loginDto: LoginRequest,
     @Res({ passthrough: true }) response: Response,
   ) {
-    console.log('login', loginDto);
     const result = await this.loginUseCase.execute({
       email: loginDto.email,
       password: loginDto.password,
@@ -40,7 +42,17 @@ export class AuthController {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        path: '/api/auth/refresh', // Only send to refresh endpoint
+        path: '/auth/refresh', // Only send to refresh endpoint
+      });
+    }
+
+    if (result.accessToken) {
+      response.cookie('accessToken', result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        path: '/',
       });
     }
 
@@ -50,6 +62,48 @@ export class AuthController {
         accessToken: result.accessToken,
         userId: result.userId,
         expiresAt: result.expiresAt,
+      },
+    };
+  }
+
+  @Post('sign-up')
+  async signUp(
+    @Body() signUpDto: CreateUserRequest,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const user = await this.createUserUseCase.execute(signUpDto);
+    const loginResponse = await this.loginUseCase.execute({
+      email: user.email,
+      password: signUpDto.password,
+    });
+
+    // Set refresh token as httpOnly cookie (only if provided)
+    if (loginResponse.refreshToken) {
+      response.cookie('refreshToken', loginResponse.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 15 * 60 * 1000, // 15 minutes
+        path: '/api/auth/refresh', // Only send to refresh endpoint
+      });
+    }
+
+    if (loginResponse.accessToken) {
+      response.cookie('accessToken', loginResponse.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+    }
+
+    return {
+      success: true,
+      data: {
+        accessToken: loginResponse.accessToken,
+        userId: loginResponse.userId,
+        expiresAt: loginResponse.expiresAt,
       },
     };
   }

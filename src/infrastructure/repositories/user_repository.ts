@@ -37,9 +37,10 @@ export class TypeOrmUserRepository implements IUserRepository {
     return this._repository.count();
   }
 
-  async save(user: User): Promise<void> {
+  async save(user: User): Promise<string> {
     const userEntity = UserMapper.toPersistence(user);
-    await this._repository.save(userEntity);
+    const { id } = await this._repository.save(userEntity);
+    return id;
   }
 
   async findByEmail(email: string): Promise<User | null> {

@@ -7,7 +7,10 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { DomainException } from '../../domain/exceptions/domain_exception';
-import { InvalidCredentialsError } from '../../domain/exceptions/auth.exceptions';
+import {
+  InvalidCredentialsError,
+  PasswordsDontMatchException,
+} from '../../domain/exceptions/auth.exceptions';
 import {
   UserAlreadyExistsError,
   UserNotFoundError,
@@ -43,6 +46,10 @@ export class DomainExceptionFilter implements ExceptionFilter {
       status = HttpStatus.UNAUTHORIZED;
       message = exception.message;
       code = 'INVALID_CREDENTIALS';
+    } else if (exception instanceof PasswordsDontMatchException) {
+      status = HttpStatus.UNPROCESSABLE_ENTITY;
+      message = exception.message;
+      code = 'PASSWORDS_DONT_MATCH';
     } else {
       // Generic error handling
       status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -58,13 +65,9 @@ export class DomainExceptionFilter implements ExceptionFilter {
     }
 
     const errorResponse = {
-      success: false,
-      error: {
-        code,
-        message,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      },
+      message: [message],
+      error: code,
+      statusCode: status,
     };
 
     response.status(status).json(errorResponse);

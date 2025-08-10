@@ -10,7 +10,7 @@ async function bootstrap() {
     cors: true,
   });
   app.useGlobalFilters(new DomainExceptionFilter(new Logger()));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
   const port = process.env.PORT || 3000;
   await app.listen(port);
   logger.log(`Application is running on: http://localhost:${port}`);

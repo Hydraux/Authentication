@@ -11,6 +11,7 @@ import { JwtTokenGateway } from 'src/infrastructure/gateways/jwt_token.gateway';
 import { TypeOrmRefreshTokenRepository } from 'src/infrastructure/repositories/refresh_token_repository';
 import { TypeOrmUserRepository } from 'src/infrastructure/repositories/user_repository';
 import { AuthController } from 'src/presentation/controllers/auth.controller';
+import { CreateUserUseCase } from '../application/use_cases/create_user';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AuthController } from 'src/presentation/controllers/auth.controller';
     JwtService,
 
     // Use cases
+    CreateUserUseCase,
     LoginUseCase,
     LogoutUseCase,
     RefreshTokenUseCase,

@@ -6,7 +6,10 @@ import {
   UserWithEmailNotFoundError,
 } from '../../domain/exceptions/user.exceptions';
 import { HttpStatus, Logger } from '@nestjs/common';
-import { InvalidCredentialsError } from '../../domain/exceptions/auth.exceptions';
+import {
+  InvalidCredentialsError,
+  PasswordsDontMatchException,
+} from '../../domain/exceptions/auth.exceptions';
 
 const mockAppLoggerService = {
   log: jest.fn(),
@@ -154,6 +157,31 @@ describe('Domain Exception Filter', () => {
       success: false,
     });
   });
+
+  it('Handles PasswordsDontMatch errors', () => {
+    domainExceptionFilter.catch(
+      new PasswordsDontMatchException(),
+      mockArgumentsHost,
+    );
+
+    expect(mockHttpArgumentsHost).toHaveBeenCalledTimes(1);
+    expect(mockHttpArgumentsHost).toHaveBeenCalledWith();
+    expect(mockGetResponse).toHaveBeenCalledTimes(1);
+    expect(mockGetResponse).toHaveBeenCalledWith();
+    expect(mockStatus).toHaveBeenCalledTimes(1);
+    expect(mockStatus).toHaveBeenCalledWith(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(mockJson).toHaveBeenCalledTimes(1);
+    expect(mockJson).toHaveBeenCalledWith({
+      error: {
+        code: 'PASSWORDS_DONT_MATCH',
+        message: `Passwords do not match`,
+        path: 'fake_url/test',
+        timestamp: new Date(mockDate).toISOString(),
+      },
+      success: false,
+    });
+  });
+
   it('Handles generic errors', () => {
     domainExceptionFilter.catch(
       new Error('generic error'),

@@ -6,6 +6,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ICryptoGateway } from '../interfaces/crypto_gateway';
 import { UserAlreadyExistsError } from 'src/domain/exceptions/user.exceptions';
 import { CreateUserRequest } from '../dtos/create_user_request';
+import { PasswordsDontMatchException } from '../../domain/exceptions/auth.exceptions';
 
 @Injectable()
 export class CreateUserUseCase implements IUseCase<CreateUserRequest, User> {
@@ -18,11 +19,10 @@ export class CreateUserUseCase implements IUseCase<CreateUserRequest, User> {
   ) {}
 
   async execute(input: CreateUserRequest): Promise<User> {
-    const { name, email, password } = input;
+    const { name, email, password, password_confirmation } = input;
 
-    // Validate input
-    if (!name || !email || !password) {
-      throw new Error('All fields are required to create a user');
+    if (password !== password_confirmation) {
+      throw new PasswordsDontMatchException();
     }
 
     // Check if user already exists
