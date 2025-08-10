@@ -1,27 +1,26 @@
-// infrastructure/filters/domain-exception.filter.ts
-import { 
-  ExceptionFilter, 
-  Catch, 
-  ArgumentsHost, 
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
   HttpStatus,
-  Logger 
+  Logger,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { DomainException } from '../../domain/exceptions/domain_exception';
+import { InvalidCredentialsError } from '../../domain/exceptions/auth.exceptions';
 import {
   UserAlreadyExistsError,
   UserNotFoundError,
-  InvalidCredentialsError,
   UserWithEmailNotFoundError,
-} from 'src/domain/exceptions/user.exceptions';
+} from '../../domain/exceptions/user.exceptions';
 
-@Catch()
+@Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(DomainExceptionFilter.name);
-
-  catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest();
+  constructor(private logger: Logger) {}
+  catch(exception: DomainException, host: ArgumentsHost) {
+    const context = host.switchToHttp();
+    const response = context.getResponse<Response>();
+    const request: Request = context.getRequest();
 
     let status: HttpStatus;
     let message: string;
@@ -44,22 +43,18 @@ export class DomainExceptionFilter implements ExceptionFilter {
       status = HttpStatus.UNAUTHORIZED;
       message = exception.message;
       code = 'INVALID_CREDENTIALS';
-    } else if (exception instanceof Error) {
+    } else {
       // Generic error handling
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       message = 'Internal server error';
       code = 'INTERNAL_ERROR';
-      
+
       // Log unexpected errors
       this.logger.error(
         `Unexpected error: ${exception.message}`,
         exception.stack,
-        { url: request.url, method: request.method }
+        { url: request.url, method: request.method },
       );
-    } else {
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
-      message = 'Unknown error occurred';
-      code = 'UNKNOWN_ERROR';
     }
 
     const errorResponse = {
