@@ -1,6 +1,13 @@
-import { Injectable, CanActivate, Inject, ExecutionContext, UnauthorizedException } from "@nestjs/common";
-import { ITokenGateway } from "src/application/interfaces/token_gateway";
-import { TokenExpiredError } from "src/domain/exceptions/auth.exceptions";
+import {
+  Injectable,
+  CanActivate,
+  Inject,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ITokenGateway } from 'src/application/interfaces/token_gateway';
+import { TokenExpiredError } from 'src/domain/exceptions/auth.exceptions';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -10,10 +17,9 @@ export class JwtAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers.authorization;
+    const request: Request = context.switchToHttp().getRequest();
 
-    const token = this.tokenGateway.extractTokenFromHeader(authHeader);
+    const token = request.cookies['access_token'] as string;
     if (!token) {
       throw new UnauthorizedException('No token provided');
     }
@@ -23,7 +29,7 @@ export class JwtAuthGuard implements CanActivate {
       const payload = await this.tokenGateway.verifyAccessToken(token);
 
       // Add user info to request
-      request.user = {
+      request['user'] = {
         id: payload.userId,
         email: payload.email,
         roles: payload.roles,

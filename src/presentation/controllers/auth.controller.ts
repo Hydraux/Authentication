@@ -1,11 +1,18 @@
-import { Controller, Post, Body, Res, Req, BadRequestException, UseGuards, Get } from "@nestjs/common";
-import { Response, Request } from "express";
-import { LoginRequest } from "src/application/contracts/login_request";
-import { RefreshTokenRequest } from "src/application/contracts/refresh_token_request";
-import { LoginUseCase } from "src/application/use_cases/login.use_case";
-import { LogoutUseCase } from "src/application/use_cases/logout.use_case";
-import { RefreshTokenUseCase } from "src/application/use_cases/refresh_token.use_case";
-import { JwtAuthGuard } from "src/infrastructure/guards/jwt_auth.guard";
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Req,
+  BadRequestException,
+  UseGuards,
+} from '@nestjs/common';
+import { Response, Request } from 'express';
+import { LoginRequest } from 'src/application/dtos/login_request';
+import { LoginUseCase } from 'src/application/use_cases/login.use_case';
+import { LogoutUseCase } from 'src/application/use_cases/logout.use_case';
+import { RefreshTokenUseCase } from 'src/application/use_cases/refresh_token.use_case';
+import { JwtAuthGuard } from 'src/infrastructure/guards/jwt_auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,10 +27,10 @@ export class AuthController {
     @Body() loginDto: LoginRequest,
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log('login', loginDto);
     const result = await this.loginUseCase.execute({
       email: loginDto.email,
       password: loginDto.password,
-      rememberMe: loginDto.rememberMe,
     });
 
     // Set refresh token as httpOnly cookie (only if provided)
@@ -50,10 +57,9 @@ export class AuthController {
   @Post('refresh')
   async refreshToken(
     @Req() request: Request,
-    @Body() refreshDto: RefreshTokenRequest,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const refreshToken = request.cookies?.refreshToken || refreshDto.refreshToken;
+    const refreshToken: string = request.cookies['refreshToken'] as string;
 
     if (!refreshToken) {
       throw new BadRequestException('Refresh token not provided');
@@ -85,7 +91,7 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const refreshToken = request.cookies?.refreshToken;
+    const refreshToken = request.cookies['refreshToken'] as string;
 
     await this.logoutUseCase.execute({
       refreshToken,

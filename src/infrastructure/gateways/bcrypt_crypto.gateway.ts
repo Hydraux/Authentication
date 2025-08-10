@@ -1,4 +1,7 @@
-import { ICryptoGateway } from "src/application/interfaces/crypto_gateway";
+import { ICryptoGateway } from 'src/application/interfaces/crypto_gateway';
+import { hash as bcryptHash, compare, genSalt } from 'bcrypt';
+
+const saltRounds: number = 10;
 
 /**
  * BcryptCryptoGateway implements the ICryptoGateway interface using bcrypt for password hashing and comparison.
@@ -6,19 +9,16 @@ import { ICryptoGateway } from "src/application/interfaces/crypto_gateway";
  * This class is designed to be used in applications that require secure password management.
  */
 export class BcryptCryptoGateway implements ICryptoGateway {
-    private bcrypt = require('bcrypt');
+  async hash(value: string): Promise<string> {
+    return await bcryptHash(value, saltRounds);
+  }
 
-    async hash(value: string): Promise<string> {
-        const saltRounds = 10;
-        return await this.bcrypt.hash(value, saltRounds);
-    }
+  async validate(value: string, hashedValue: string): Promise<boolean> {
+    return await compare(value, hashedValue);
+  }
 
-    async validate(value: string, hashedValue: string): Promise<boolean> {
-        return await this.bcrypt.compare(value, hashedValue);
-    }
-
-    async generateSalt(): Promise<string> {
-        const saltRounds = 10;
-        return await this.bcrypt.genSalt(saltRounds);
-    }
+  async generateSalt(): Promise<string> {
+    const saltRounds = 10;
+    return await genSalt(saltRounds);
+  }
 }

@@ -12,7 +12,6 @@ import { UserMapper } from 'src/infrastructure/mappers/user.mapper';
 import { TypeOrmUserRepository } from 'src/infrastructure/repositories/user_repository';
 import { UserController } from 'src/presentation/controllers/user.controller';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity])],
   providers: [
@@ -25,7 +24,7 @@ import { UserController } from 'src/presentation/controllers/user.controller';
       provide: 'CryptoGateway',
       useClass: BcryptCryptoGateway,
     },
-    
+
     // Use Cases (add all that your controller uses)
     GetUsersUseCase,
     GetUserByIdUseCase,
@@ -34,11 +33,21 @@ import { UserController } from 'src/presentation/controllers/user.controller';
     DeleteUserByEmailUseCase,
     UpdateUserUseCase,
     // ... other use cases
-    
+
     // Mappers
     UserMapper,
   ],
   controllers: [UserController],
-  exports: ['UserRepository', 'CryptoGateway', UserMapper, GetUsersUseCase, GetUserByIdUseCase, GetUserByEmailUseCase, CreateUserUseCase, DeleteUserByEmailUseCase, UpdateUserUseCase],
+  exports: [
+    'UserRepository',
+    'CryptoGateway',
+    UserMapper,
+    GetUsersUseCase,
+    GetUserByIdUseCase,
+    GetUserByEmailUseCase,
+    CreateUserUseCase,
+    DeleteUserByEmailUseCase,
+    UpdateUserUseCase,
+  ],
 })
 export class UsersModule {}

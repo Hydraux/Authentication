@@ -1,19 +1,21 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { IUserRepository } from "../interfaces/user_repository";
+import { Inject, Injectable } from '@nestjs/common';
+import { IUserRepository } from '../interfaces/user_repository';
+import { IUseCase } from '../interfaces/use_case';
+import { User } from '../../domain/entities/user.entity';
+import { GetUsersRequest } from '../dtos/get_users_request';
 
 @Injectable()
-export class GetUsersUseCase {
-    constructor(
-            @Inject('UserRepository')
-            private userRepository: IUserRepository
-        ) {}
+export class GetUsersUseCase implements IUseCase<GetUsersRequest, User[]> {
+  constructor(
+    @Inject('UserRepository')
+    private userRepository: IUserRepository,
+  ) {}
 
-    async execute() {
-        try {
-            const users = await this.userRepository.findAll();
-            return users;
-        } catch (error) {
-            throw new Error(`Error fetching users: ${error.message}`);
-        }
+  async execute() {
+    try {
+      return await this.userRepository.findAll();
+    } catch (error) {
+      throw new Error(`Error fetching users: ${error}`);
     }
+  }
 }

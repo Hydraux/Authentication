@@ -1,27 +1,22 @@
-export class UserAlreadyExistsError extends Error {
+import { DomainException } from './domain_exception';
+
+export class UserAlreadyExistsError extends DomainException {
   constructor(email: string) {
     super(`User with email '${email}' already exists`);
     this.name = 'UserAlreadyExistsError';
   }
 }
 
-export class UserNotFoundError extends Error {
+export class UserNotFoundError extends DomainException {
   constructor(identifier: string) {
     super(`User with identifier '${identifier}' not found`);
     this.name = 'UserNotFoundError';
   }
 }
 
-export class UserWithEmailNotFoundError extends Error {
-    constructor(email: string) {
-        super(`User with email '${email}' not found`);
-        this.name = 'UserWithEmailNotFoundError';
-    }
-    }
-
-export class InvalidCredentialsError extends Error {
-  constructor() {
-    super('Invalid email or password');
-    this.name = 'InvalidCredentialsError';
+export class UserWithEmailNotFoundError extends DomainException {
+  constructor(email: string) {
+    super(`User with email '${email}' not found`);
+    this.name = 'UserWithEmailNotFoundError';
   }
 }

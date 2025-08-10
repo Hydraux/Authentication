@@ -4,7 +4,7 @@ export class JwtPayload {
     public readonly email: string,
     public readonly roles: string[],
     public readonly issuedAt: Date,
-    public readonly expiresAt: Date
+    public readonly expiresAt: Date,
   ) {}
 
   static create(data: {
@@ -15,13 +15,7 @@ export class JwtPayload {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes
 
-    return new JwtPayload(
-      data.userId,
-      data.email,
-      data.roles,
-      now,
-      expiresAt,
-    );
+    return new JwtPayload(data.userId, data.email, data.roles, now, expiresAt);
   }
 
   isExpired(): boolean {
@@ -42,11 +36,11 @@ export class JwtPayload {
     };
   }
 
-  static fromPlainObject(payload: any): JwtPayload {
+  static fromPlainObject(payload: Record<string, any>): JwtPayload {
     return new JwtPayload(
-      payload.sub,
-      payload.email,
-      payload.roles || [],
+      payload.sub as string,
+      payload.email as string,
+      (payload.roles as string[]) || [],
       new Date(payload.iat * 1000),
       new Date(payload.exp * 1000),
     );
