@@ -35,6 +35,13 @@ import { UserEntity } from 'src/infrastructure/database/entities/user.entity';
           ),
           entities: [UserEntity, RefreshTokenEntity],
           synchronize: !isProduction,
+          autoLoadEntities: true,
+          migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+          seeds: [__dirname + '/seeds/**/*{.ts,.js}'],
+          factories: [__dirname + '/factories/**/*{.ts,.js}'],
+          cli: {
+            migrationsDir: __dirname + '/migrations/',
+          },
           logging: !isProduction,
         };
       },

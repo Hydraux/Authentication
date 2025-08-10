@@ -2,17 +2,23 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DomainExceptionFilter } from './infrastructure/filters/domain_exception.filter';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
+
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log'],
-    cors: true,
+    cors: { origin: process.env.CORS_ORIGIN, credentials: true },
   });
+
   app.useGlobalFilters(new DomainExceptionFilter(new Logger()));
   app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
+  app.use(cookieParser());
+
   const port = process.env.PORT || 3000;
   await app.listen(port);
+
   logger.log(`Application is running on: http://localhost:${port}`);
   logger.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }

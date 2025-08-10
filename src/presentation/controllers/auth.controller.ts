@@ -83,8 +83,8 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 15 * 60 * 1000, // 15 minutes
-        path: '/api/auth/refresh', // Only send to refresh endpoint
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        path: '/auth/refresh', // Only send to refresh endpoint
       });
     }
 
@@ -93,7 +93,7 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+        maxAge: 15 * 60 * 1000, // 15 minutes
         path: '/',
       });
     }
@@ -126,8 +126,8 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      path: '/api/auth/refresh',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      path: '/auth/refresh',
     });
 
     return {
