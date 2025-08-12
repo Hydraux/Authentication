@@ -6,7 +6,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ITokenGateway } from 'src/application/interfaces/token_gateway';
-import { TokenExpiredError } from 'src/domain/exceptions/auth.exceptions';
+import {
+  InvalidTokenError,
+  TokenExpiredError,
+} from 'src/domain/exceptions/auth.exceptions';
 import { Request } from 'express';
 
 @Injectable()
@@ -21,7 +24,7 @@ export class JwtAuthGuard implements CanActivate {
 
     const token = request.cookies['access_token'] as string;
     if (!token) {
-      throw new UnauthorizedException('No token provided');
+      throw new InvalidTokenError('No token provided');
     }
 
     try {

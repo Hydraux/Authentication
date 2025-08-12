@@ -9,6 +9,7 @@ import { Request, Response } from 'express';
 import { DomainException } from '../../domain/exceptions/domain_exception';
 import {
   InvalidCredentialsError,
+  InvalidTokenError,
   PasswordsDontMatchException,
 } from '../../domain/exceptions/auth.exceptions';
 import {
@@ -46,6 +47,10 @@ export class DomainExceptionFilter implements ExceptionFilter {
       status = HttpStatus.UNAUTHORIZED;
       message = exception.message;
       code = 'INVALID_CREDENTIALS';
+    } else if (exception instanceof InvalidTokenError) {
+      status = HttpStatus.UNAUTHORIZED;
+      message = exception.message;
+      code = 'UNAUTHORIZED';
     } else if (exception instanceof PasswordsDontMatchException) {
       status = HttpStatus.UNPROCESSABLE_ENTITY;
       message = exception.message;

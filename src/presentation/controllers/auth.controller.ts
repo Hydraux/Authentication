@@ -4,7 +4,6 @@ import {
   Body,
   Res,
   Req,
-  BadRequestException,
   UseGuards,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
@@ -15,6 +14,7 @@ import { RefreshTokenUseCase } from 'src/application/use_cases/refresh_token.use
 import { JwtAuthGuard } from 'src/infrastructure/guards/jwt_auth.guard';
 import { CreateUserUseCase } from '../../application/use_cases/create_user';
 import { CreateUserRequest } from '../../application/dtos/create_user_request';
+import { InvalidTokenError } from '../../domain/exceptions/auth.exceptions';
 
 @Controller('auth')
 export class AuthController {
@@ -37,7 +37,7 @@ export class AuthController {
 
     // Set refresh token as httpOnly cookie (only if provided)
     if (result.refreshToken) {
-      response.cookie('refreshToken', result.refreshToken, {
+      response.cookie('refresh_token', result.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -47,7 +47,7 @@ export class AuthController {
     }
 
     if (result.accessToken) {
-      response.cookie('accessToken', result.accessToken, {
+      response.cookie('access_token', result.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -79,7 +79,7 @@ export class AuthController {
 
     // Set refresh token as httpOnly cookie (only if provided)
     if (loginResponse.refreshToken) {
-      response.cookie('refreshToken', loginResponse.refreshToken, {
+      response.cookie('refresh_token', loginResponse.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -89,7 +89,7 @@ export class AuthController {
     }
 
     if (loginResponse.accessToken) {
-      response.cookie('accessToken', loginResponse.accessToken, {
+      response.cookie('access_token', loginResponse.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -113,21 +113,21 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const refreshToken: string = request.cookies['refreshToken'] as string;
+    const refreshToken: string = request.cookies['refresh_token'] as string;
 
     if (!refreshToken) {
-      throw new BadRequestException('Refresh token not provided');
+      throw new InvalidTokenError('Refresh token not provided');
     }
 
     const result = await this.refreshTokenUseCase.execute({ refreshToken });
 
     // Set new refresh token as cookie
-    response.cookie('refreshToken', result.refreshToken, {
+    response.cookie('access_token', result.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      path: '/auth/refresh',
+      maxAge: 15 * 60 * 1000, // 15 Minutes
+      path: '/',
     });
 
     return {
@@ -145,13 +145,14 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const refreshToken = request.cookies['refreshToken'] as string;
+    const refreshToken = request.cookies['refresh_token'] as string;
 
     await this.logoutUseCase.execute({
       refreshToken,
     });
 
-    response.clearCookie('refreshToken', { path: '/api/auth/refresh' });
+    response.clearCookie('refresh_token', { path: '/auth/refresh' });
+    response.clearCookie('access_token', { path: '/' });
 
     return {
       success: true,
