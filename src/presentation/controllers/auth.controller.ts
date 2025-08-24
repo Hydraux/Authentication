@@ -1,12 +1,5 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Res,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { LoginRequest } from 'src/application/dtos/login_request';
 import { LoginUseCase } from 'src/application/use_cases/login.use_case';
 import { LogoutUseCase } from 'src/application/use_cases/logout.use_case';

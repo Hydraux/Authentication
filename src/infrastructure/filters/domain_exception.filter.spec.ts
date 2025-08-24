@@ -1,5 +1,5 @@
 import { DomainExceptionFilter } from './domain_exception.filter';
-import { TestingModule, Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
   UserAlreadyExistsError,
   UserNotFoundError,
@@ -46,7 +46,6 @@ const mockDate = Date.now();
 
 describe('Domain Exception Filter', () => {
   let domainExceptionFilter: DomainExceptionFilter;
-
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -183,10 +182,7 @@ describe('Domain Exception Filter', () => {
   });
 
   it('Handles generic errors', () => {
-    domainExceptionFilter.catch(
-      new Error('generic error'),
-      mockArgumentsHost,
-    );
+    domainExceptionFilter.catch(new Error('generic error'), mockArgumentsHost);
 
     expect(mockHttpArgumentsHost).toHaveBeenCalledTimes(1);
     expect(mockHttpArgumentsHost).toHaveBeenCalledWith();
